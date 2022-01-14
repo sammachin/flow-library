@@ -1,0 +1,102 @@
+{{>_header}}
+<div class="grid" style="background: none;">
+    <div class="col-1-12">&nbsp;</div>
+    <div class="col-10-12 thing-list-section" style="background: white; padding: 10px 50px;">
+        <h2 class="pagetitle">Delete a node</h2>
+
+
+      
+        <div class="step">
+            <span class="step-count">3</span>
+            <div>
+                <span>Delete Node</span>
+                <p>Use this form to delete a node from the Flow Library</p>
+                    <form id="add-node" action="/admin/node/delete" method="POST">
+                        <input id="add-node-csrf" name="_csrf" type="hidden" value="{{csrfToken}}">
+                        <input id="add-node-module" type="text" name="module" placeholder="Enter the npm module name here">
+                        <div style="position:relative"><div id="add-node-error" class="dialog-warning"></div>&nbsp;</div>
+                        <button type="button" class="btn-create" id="add-node-create"><span id="add-node-label">add node</span><img id="add-node-loader" class="loader" src="/images/loader.gif" /></button>
+                    </form>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+<style>
+    .step {
+        margin-top:40px;
+        margin-bottom: 30px;
+    }
+    .step-count {
+        display: inline-block;
+        width:50px;
+        height: 50px;
+        text-align:center;
+        line-height: 50px;
+        border-top-right-radius:15px;
+        border-bottom-left-radius:8px;
+        background: #aa4444;
+        color: white;
+        font-size: 40px;
+        float: left;
+        margin-right: 20px;
+    }
+    .step-count + div {
+        display: inline-block;
+        max-width: 500px;
+    }
+    .step-count + div > span:first-child {
+        font-size: 1.2em;
+    }
+    </style>
+
+    <script>
+
+    $(function() {
+
+        $(document).ready(function() {
+            $(window).keydown(function(event){
+                if(event.keyCode == 13) {
+                    event.preventDefault();
+                    $('#add-node-create').trigger("click");
+                    return false;
+                }
+            });
+        });
+
+
+        var createSubmitted = false;
+
+        $('#add-node-create').click(function(e) {
+            e.preventDefault();
+            if (createSubmitted) {
+                return;
+            }
+            createSubmitted = true;
+            $("#add-node-error").hide();
+            $("#add-node-label").hide();
+            $("#add-node-create").addClass("submitted");
+            $("#add-node-loader").show();
+            var module = {
+                module: $("#add-node-module").val(),
+                _csrf: $("#add-node-csrf").val()
+            };
+            $.post("/add/node",module,function(data) {
+                window.location = data;
+            }).fail(function(err) {
+                if (err.status == 403) {
+                    window.location.reload();
+                }
+                createSubmitted = false;
+                console.log("ERROR",err);
+                $("#add-node-create").removeClass("submitted");
+                $("#add-node-loader").hide();
+                $("#add-node-label").show();
+                $("#add-node-error").text(err.responseText).show();
+            });
+        });
+
+    });
+    </script>
+
+{{>_footer}}
