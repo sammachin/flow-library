@@ -27,15 +27,12 @@ app.get("/admin/node/delete",function(req,res) {
     context.sessionuser = req.session.user;
     console.log(context.sessionuser)
     if (context.sessionuser){
+        //TODO if user is in admins, send the delete page
+        res.send(mustache.render(templates.events,context,templates.partials));
     } else{
+        // otherwise 403
+        res.status(403).send()
     }
-        res.send(mustache.render(templates.events,context,templates.partials));
-    }).catch(function(err) {
-        console.log(err);
-        context.err = err;
-        context.events = [];
-        res.send(mustache.render(templates.events,context,templates.partials));
-    });
 });
 
 module.exports = app;
